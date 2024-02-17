@@ -1,22 +1,48 @@
+use core::panic;
+
 use clap::Parser;
-
-/// Simple program to greet a person
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
-struct Args {
-    /// Name of the person to greet
-    #[arg(short, long)]
-    name: String,
-
-    /// Number of times to greet
-    #[arg(short, long, default_value_t = 1)]
-    count: u8,
-}
+use stack::{cli::Cli, config::Config};
 
 fn main() {
-    let args = Args::parse();
+    let cli = Cli::parse();
 
-    for _ in 0..args.count {
-        println!("Hello {}!", args.name)
+    match cli.command {
+        stack::cli::Commands::Init { name, go, rust } => {
+            let c = Config::new(name.clone(), if go {
+                stack::config::Language::Go
+            } else if rust {
+                stack::config::Language::Rust
+            } else {
+                panic!("You must specify a language")
+            });
+
+            match c.write() {
+                Ok(()) => println!("{} initialized", name),
+                Err(e) => println!("Error: {}", e),
+            }
+        }
+        stack::cli::Commands::Generate {
+            path,
+            name,
+            protocol,
+            message,
+            state,
+            contract,
+            model,
+            service,
+            mediator,
+            aggregator,
+            handler,
+            adapter,
+            server,
+        } => {
+            let cfg = match Config::read() {
+                Ok(c) => c,
+                Err(e) => {
+                    println!("Error: {}", e);
+                    return;
+                }
+            };
+        }
     }
 }
