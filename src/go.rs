@@ -298,6 +298,47 @@ func Check(i {}) {{}}
 	Ok(())
 }
 
+pub async fn write_assembler(writer: &mut File, project_name: &str, name: &str) -> Result<(), Box<dyn Error>> {
+	writer.write(format!("package {}
+
+import (
+	\"{}/gen/provider\"
+	\"os/signal\"
+	\"syscall\"
+	\"context\"
+)
+
+func main() {{
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
+	done := ctx.Done()
+
+	p := provider.New()
+
+	// Register your dependencies here
+	p.Register()
+
+	// Create instances of your dependencies here
+	p.Construct()
+
+	// Update instances of your dependencies here
+	for _, f := range []any{{}} {{
+		provider.Update(p, f)
+	}}
+
+	// Run your application here
+	for _, f := range []any{{}} {{
+		provider.JustRun(p, f)
+	}}
+
+	<-done
+}}
+
+	", name, project_name).as_bytes()).await?;
+
+	Ok(())
+}
+
 const SERVICE_FOLDER : &str = "./lib/service";
 const MODEL_FOLDER : &str = "./lib/model";
 const CONTRACT_FOLDER : &str = "./lib/contract";
@@ -309,6 +350,7 @@ const SERVER_FOLDER : &str = "./internal/server";
 const MESSAGE_FOLDER : &str = "./lib/message";
 const PROTOCOL_FOLDER : &str = "./lib/protocol";
 const STATE_FOLDER : &str = "./lib/state";
+const ASSEMBLER_FOLDER : &str = "./cmd";
 
 pub async fn init_go_mod(name: &str) -> Result<(), Box<dyn Error>> {
 	let output = Command::new("go")
@@ -335,6 +377,7 @@ pub async fn init_go_mod(name: &str) -> Result<(), Box<dyn Error>> {
 	tokio::fs::create_dir_all(MESSAGE_FOLDER).await?;
 	tokio::fs::create_dir_all(PROTOCOL_FOLDER).await?;
 	// tokio::fs::create_dir_all(STATE_FOLDER).await?;
+	tokio::fs::create_dir_all(ASSEMBLER_FOLDER).await?;
 	
 	let mut provider_file = File::create(format!("{}/provider.go", provider_path)).await?;
 
@@ -343,7 +386,7 @@ pub async fn init_go_mod(name: &str) -> Result<(), Box<dyn Error>> {
 	Ok(())
 }
 
-pub async fn generate_file(name: &str, path: &str, category: &Category) -> Result<(), Box<dyn Error>> {
+pub async fn generate_file(name: &str, path: &str, project_name: &str, category: &Category) -> Result<(), Box<dyn Error>> {
 	let lower_case_name = name.to_lowercase();
 	let file = match category {
 		Category::Service => format!("{}/{}/{}", SERVICE_FOLDER, path, lower_case_name),
@@ -357,6 +400,7 @@ pub async fn generate_file(name: &str, path: &str, category: &Category) -> Resul
 		Category::Message => format!("{}/{}/{}", MESSAGE_FOLDER, path, lower_case_name),
 		Category::Protocol => format!("{}/{}/{}", PROTOCOL_FOLDER, path, lower_case_name),
 		Category::State => format!("{}/{}/{}", STATE_FOLDER, path, lower_case_name),
+		Category::Assembler => format!("{}/{}/{}", ASSEMBLER_FOLDER, path, lower_case_name),
 	};
 
 	tokio::fs::create_dir_all(&file).await?;
@@ -365,6 +409,7 @@ pub async fn generate_file(name: &str, path: &str, category: &Category) -> Resul
 
 	match category {
 		Category::Contract => write_interface(&mut file, name).await?,
+		Category::Assembler => write_assembler(&mut file, project_name, name).await?,
 		_ => write_struct(&mut file, name).await?,
 	};
 

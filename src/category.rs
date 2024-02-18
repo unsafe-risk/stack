@@ -14,6 +14,7 @@ pub enum Category {
     State,
     Contract,
     Model,
+    Assembler,
 }
 
 impl Display for Category {
@@ -30,6 +31,7 @@ impl Display for Category {
             Category::State => write!(f, "state"),
             Category::Contract => write!(f, "contract"),
             Category::Model => write!(f, "model"),
+            Category::Assembler => write!(f, "assembler"),
         }
     }
 }

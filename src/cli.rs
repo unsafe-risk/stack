@@ -51,5 +51,8 @@ pub enum Commands {
 
         #[arg(short = 'v', long)]
         server: bool,
+
+        #[arg(short = 'b', long)]
+        assembler: bool,
     }
 }
