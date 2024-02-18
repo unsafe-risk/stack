@@ -82,3 +82,10 @@ To view the help, use the following command.
 ```bash
 stack generate --help
 ```
+
+## TODO
+
+- [ ] Add `--buf` option to `stack init` command
+- [ ] Add `--proto` option to `stack generate` command
+- [ ] Implement dependency management for `rust` projects
+- [ ] Implement `stack init --rust` command
