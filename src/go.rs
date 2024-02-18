@@ -319,7 +319,7 @@ func main() {{
 	p.Register()
 
 	// Create instances of your dependencies here
-	p.Construct()
+	p.Construct(ctx)
 
 	// Update instances of your dependencies here
 	for _, f := range []any{{}} {{
