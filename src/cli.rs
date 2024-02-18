@@ -25,16 +25,13 @@ pub enum Commands {
         #[arg(short, long)]
         protocol: bool,
 
-        #[arg(short, long)]
+        #[arg(short = 'g', long)]
         message: bool,
-
-        #[arg(short, long)]
-        state: bool,
 
         #[arg(short, long)]
         contract: bool,
 
-        #[arg(short, long)]
+        #[arg(short = 'd', long)]
         model: bool,
 
         #[arg(short, long)]
@@ -43,16 +40,16 @@ pub enum Commands {
         #[arg(short, long)]
         mediator: bool,
 
-        #[arg(short, long)]
+        #[arg(short = 'r', long)]
         aggregator: bool,
 
-        #[arg(short, long)]
+        #[arg(short = 'n', long)]
         handler: bool,
 
         #[arg(short, long)]
         adapter: bool,
 
-        #[arg(short, long)]
+        #[arg(short = 'v', long)]
         server: bool,
     }
 }
