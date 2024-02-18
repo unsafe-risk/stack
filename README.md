@@ -15,13 +15,13 @@ cargo install --git https://github.com/unsafe-risk/stack
 #### go
 
 ```bash
-stack init <project-name> --go
+stk init <project-name> --go
 ```
 
 #### rust
 
 ```bash
-stack init <project-name> --rust
+stk init <project-name> --rust
 ```
 
 ### Common Module
@@ -74,13 +74,13 @@ stack init <project-name> --rust
 Generate a module with the following command.
 
 ```bash
-stack generate <module-path> <module-name> --service
+stk generate <module-path> <module-name> --service
 ```
 
 To view the help, use the following command.
 
 ```bash
-stack generate --help
+stk generate --help
 ```
 
 ## TODO
