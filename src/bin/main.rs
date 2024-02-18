@@ -42,6 +42,7 @@ async fn main() {
             handler,
             adapter,
             server,
+            assembler,
         } => {
             let cfg = match Config::read() {
                 Ok(c) => c,
@@ -73,11 +74,13 @@ async fn main() {
                         stack::category::Category::Adapter
                     } else if server {
                         stack::category::Category::Server
+                    } else if assembler {
+                        stack::category::Category::Assembler
                     } else {
                         panic!("You must specify a category")
                     };
 
-                    match go::generate_file(name.as_str(), path.as_str(), &category).await {
+                    match go::generate_file(name.as_str(), path.as_str(), cfg.name.as_str(), &category).await {
                         Ok(()) => println!("{} {} generated", &category, name),
                         Err(e) => println!("Error: {}", e),
                     }
