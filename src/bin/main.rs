@@ -28,6 +28,13 @@ async fn main() {
                     Err(e) => println!("Error: {}", e),
                 }
             }
+
+            if rust {
+                match stack::rust::init_cargo(&name).await {
+                    Ok(()) => println!("Cargo initialized"),
+                    Err(e) => println!("Error: {}", e),
+                }
+            }
         }
         stack::cli::Commands::Generate {
             path,
@@ -52,41 +59,44 @@ async fn main() {
                 }
             };
 
+            let category = if protocol {
+                stack::category::Category::Protocol
+            } else if message {
+                stack::category::Category::Message
+            } else if contract {
+                stack::category::Category::Contract
+            } else if model {
+                stack::category::Category::Model
+            } else if service {
+                stack::category::Category::Service
+            } else if mediator {
+                stack::category::Category::Mediator
+            } else if aggregator {
+                stack::category::Category::Aggregator
+            } else if handler {
+                stack::category::Category::Handler
+            } else if adapter {
+                stack::category::Category::Adapter
+            } else if server {
+                stack::category::Category::Server
+            } else if assembler {
+                stack::category::Category::Assembler
+            } else {
+                panic!("You must specify a category")
+            };
+
             match cfg.language {
                 stack::config::Language::Go => {
-                    let category = if protocol {
-                        stack::category::Category::Protocol
-                    } else if message {
-                        stack::category::Category::Message
-                    } else if contract {
-                        stack::category::Category::Contract
-                    } else if model {
-                        stack::category::Category::Model
-                    } else if service {
-                        stack::category::Category::Service
-                    } else if mediator {
-                        stack::category::Category::Mediator
-                    } else if aggregator {
-                        stack::category::Category::Aggregator
-                    } else if handler {
-                        stack::category::Category::Handler
-                    } else if adapter {
-                        stack::category::Category::Adapter
-                    } else if server {
-                        stack::category::Category::Server
-                    } else if assembler {
-                        stack::category::Category::Assembler
-                    } else {
-                        panic!("You must specify a category")
-                    };
-
                     match go::generate_file(name.as_str(), path.as_str(), cfg.name.as_str(), &category).await {
                         Ok(()) => println!("{} {} generated", &category, name),
                         Err(e) => println!("Error: {}", e),
                     }
                 }
                 stack::config::Language::Rust => {
-                    println!("Rust not implemented");
+                    match stack::rust::generate_file(name.as_str(), path.as_str(), cfg.name.as_str(), &category).await {
+                        Ok(()) => println!("{} {} generated", &category, name),
+                        Err(e) => println!("Error: {}", e),
+                    }
                 }
             }
         }
