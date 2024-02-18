@@ -4,7 +4,6 @@ use tokio::{fs::File, io::AsyncWriteExt, process::Command};
 
 use crate::category::Category;
 
-
 pub const PROVIDER_CODE : &str = "package provider
 
 import (
