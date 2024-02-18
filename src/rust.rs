@@ -32,28 +32,28 @@ pub async fn write_assembler(writer: &mut File) -> Result<(), std::io::Error> {
     Ok(())
 }
 
-const SERVICE_FOLDER: &str = "src/service";
-const SERVICE_FILE: &str = "src/service/mod.rs";
-const MODEL_FOLDER: &str = "src/model";
-const MODEL_FILE: &str = "src/model/mod.rs";
-const CONTRACT_FOLDER: &str = "src/contract";
-const CONTRACT_FILE: &str = "src/contract/mod.rs";
-const MEDIATOR_FOLDER: &str = "src/mediator";
-const MEDIATOR_FILE: &str = "src/mediator/mod.rs";
-const AGGREGATOR_FOLDER: &str = "src/aggregator";
-const AGGREGATOR_FILE: &str = "src/aggregator/mod.rs";
-const HANDLER_FOLDER: &str = "src/handler";
-const HANDLER_FILE: &str = "src/handler/mod.rs";
-const ADAPTER_FOLDER: &str = "src/adapter";
-const ADAPTER_FILE: &str = "src/adapter/mod.rs";
-const SERVER_FOLDER: &str = "src/server";
-const SERVER_FILE: &str = "src/server/mod.rs";
-const MESSAGE_FOLDER: &str = "src/message";
-const MESSAGE_FILE: &str = "src/message/mod.rs";
-const PROTOCOL_FOLDER: &str = "src/protocol";
-const PROTOCOL_FILE: &str = "src/protocol/mod.rs";
-const STATE_FOLDER: &str = "src/state";
-const STATE_FILE: &str = "src/state/mod.rs";
+const SERVICE_FOLDER: &str = "src/component/service";
+const SERVICE_FILE: &str = "src/component/service/mod.rs";
+const MODEL_FOLDER: &str = "src/component/model";
+const MODEL_FILE: &str = "src/component/model/mod.rs";
+const CONTRACT_FOLDER: &str = "src/component/contract";
+const CONTRACT_FILE: &str = "src/component/contract/mod.rs";
+const MEDIATOR_FOLDER: &str = "src/controller/mediator";
+const MEDIATOR_FILE: &str = "src/controller/mediator/mod.rs";
+const AGGREGATOR_FOLDER: &str = "src/controller/aggregator";
+const AGGREGATOR_FILE: &str = "src/controller/aggregator/mod.rs";
+const HANDLER_FOLDER: &str = "src/controller/handler";
+const HANDLER_FILE: &str = "src/controller/handler/mod.rs";
+const ADAPTER_FOLDER: &str = "src/controller/adapter";
+const ADAPTER_FILE: &str = "src/controller/adapter/mod.rs";
+const SERVER_FOLDER: &str = "src/controller/server";
+const SERVER_FILE: &str = "src/controller/server/mod.rs";
+const MESSAGE_FOLDER: &str = "src/component/message";
+const MESSAGE_FILE: &str = "src/component/message/mod.rs";
+const PROTOCOL_FOLDER: &str = "src/component/protocol";
+const PROTOCOL_FILE: &str = "src/component/protocol/mod.rs";
+const STATE_FOLDER: &str = "src/component/state";
+const STATE_FILE: &str = "src/component/state/mod.rs";
 const ASSEMBLER_FOLDER: &str = "src/bin";
 
 pub async fn init_cargo(name: &str) -> Result<(), std::io::Error> {
@@ -125,9 +125,13 @@ pub async fn init_cargo(name: &str) -> Result<(), std::io::Error> {
     tokio::fs::create_dir_all(STATE_FOLDER).await?;
     File::create(STATE_FILE).await?;
 
-    let mut lib_file = File::create("src/lib.rs").await?;
+    let mut mod_file = File::create("src/component/mod.rs").await?;
+    mod_file.write("pub mod service;\npub mod model;\npub mod contract;\npub mod message;\npub mod state;\npub mod protocol;\n".as_bytes()).await?;
+    let mut mod_file = File::create("src/controller/mod.rs").await?;
+    mod_file.write("pub mod aggregator;\npub mod handler;\npub mod adapter;\npub mod server;\npub mod mediator;\n".as_bytes()).await?;
 
-    lib_file.write("pub mod service;\npub mod model;\npub mod contract;\npub mod mediator;\npub mod aggregator;\npub mod handler;\npub mod adapter;\npub mod server;\npub mod message;\npub mod protocol;\npub mod state;\n".as_bytes()).await?;
+    let mut lib_file = File::create("src/lib.rs").await?;
+    lib_file.write("pub mod component;\npub mod controller;\n".as_bytes()).await?;
 
     Ok(())   
 }
