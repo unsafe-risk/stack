@@ -4,8 +4,8 @@ pub const CONFIG_FILE: &str = "stack.yaml";
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct Config {
-    name: String,
-    language: Language,
+    pub name: String,
+    pub language: Language,
 }
 
 impl Config {
