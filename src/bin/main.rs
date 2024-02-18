@@ -1,9 +1,10 @@
 use core::panic;
 
 use clap::Parser;
-use stack::{cli::Cli, config::Config};
+use stack::{cli::Cli, config::Config, go};
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let cli = Cli::parse();
 
     match cli.command {
@@ -17,8 +18,15 @@ fn main() {
             });
 
             match c.write() {
-                Ok(()) => println!("{} initialized", name),
+                Ok(()) => println!("{} config wrote", name),
                 Err(e) => println!("Error: {}", e),
+            }
+
+            if go {
+                match stack::go::init_go_mod(&name).await {
+                    Ok(()) => println!("Go mod initialized"),
+                    Err(e) => println!("Error: {}", e),
+                }
             }
         }
         stack::cli::Commands::Generate {
@@ -26,7 +34,6 @@ fn main() {
             name,
             protocol,
             message,
-            state,
             contract,
             model,
             service,
@@ -43,6 +50,42 @@ fn main() {
                     return;
                 }
             };
+
+            match cfg.language {
+                stack::config::Language::Go => {
+                    let category = if protocol {
+                        stack::category::Category::Protocol
+                    } else if message {
+                        stack::category::Category::Message
+                    } else if contract {
+                        stack::category::Category::Contract
+                    } else if model {
+                        stack::category::Category::Model
+                    } else if service {
+                        stack::category::Category::Service
+                    } else if mediator {
+                        stack::category::Category::Mediator
+                    } else if aggregator {
+                        stack::category::Category::Aggregator
+                    } else if handler {
+                        stack::category::Category::Handler
+                    } else if adapter {
+                        stack::category::Category::Adapter
+                    } else if server {
+                        stack::category::Category::Server
+                    } else {
+                        panic!("You must specify a category")
+                    };
+
+                    match go::generate_file(name.as_str(), path.as_str(), &category).await {
+                        Ok(()) => println!("{} {} generated", &category, name),
+                        Err(e) => println!("Error: {}", e),
+                    }
+                }
+                stack::config::Language::Rust => {
+                    println!("Rust not implemented");
+                }
+            }
         }
     }
 }
