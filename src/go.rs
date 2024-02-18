@@ -298,7 +298,7 @@ func Check(i {}) {{}}
 	Ok(())
 }
 
-const SERVICE_FOLDER : &str = "./internal/service";
+const SERVICE_FOLDER : &str = "./lib/service";
 const MODEL_FOLDER : &str = "./lib/model";
 const CONTRACT_FOLDER : &str = "./lib/contract";
 const MEDIATOR_FOLDER : &str = "./internal/mediator";
